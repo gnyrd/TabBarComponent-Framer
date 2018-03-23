@@ -22,3 +22,4 @@ framer/framer.init.js
 framer/framer.js
 modules/myModule.coffee
 modules/TabBarComponent.coffee
+app.js

@@ -21,12 +21,12 @@ defaults =
 	tabBarHide: true
 	tabs: []
 	active: 0
-	iconColor: "black"
-	labelColor: "black"
-	tabBarColor: "white"
+	iconColor: "#00BCD4"
+	labelColor: null
+	tabBarColor: "#FAFAFA"
 	tabLabel: false
 	activeIndicator: true
-	indicatorColor: "black"
+	indicatorColor: null
 
 class TabBarComponent extends Layer
 	constructor: (@options={}) ->
@@ -39,12 +39,13 @@ class TabBarComponent extends Layer
 
 			@width = Screen.width
 			@height = 48
-			@backgroundColor = "clear"
+			@backgroundColor = null
 
 			tabContent = new FlowComponent
-				name: "TabContents"
+				name: "TabBarContents"
 				parent: @
 				y: 0
+				backgroundColor: null
 
 			tabBarComponent = new Layer
 				name: "TabBarComponent"
@@ -53,6 +54,7 @@ class TabBarComponent extends Layer
 				x: 0
 				height: 48
 				width: Screen.width
+				backgroundColor: null
 
 			tabWidth = Screen.width / @options.tabs.length
 
@@ -72,12 +74,13 @@ class TabBarComponent extends Layer
 						curve: "spring(400, 40, 0)"
 						time: 0.01
 				hide:
-					y: tabBar.y - tabBar.height
+					y: tabBar.y - (tabBar.height * 2)
 					animationOptions:
 						curve: "spring(400, 40, 0)"
 						time: 0.05
 
 			# activeIndicator
+			@options.indicatorColor ?= @options.iconColor
 			activeIndicator = new Layer
 				name: "TabIndicator"
 				parent: tabBar
@@ -107,6 +110,9 @@ class TabBarComponent extends Layer
 					height: 48
 					width: tabWidth
 					backgroundColor: ""
+				tab.addChild(item)
+				item.x = Align.center
+				item.children[0].color = @options.iconColor
 				tab.states =
 					active:
 						opacity: 1.0
@@ -115,27 +121,27 @@ class TabBarComponent extends Layer
 						opacity: 0.5
 						grayscale: 100
 				tab.stateSwitch("inactive")
-				tab.addChild(item)
-				item.x = Align.center
-				item.children[0].color = @options.iconColor
 
 				if @options.tabLabel
+					@options.labelColor ?= @options.iconColor
 					label = new TextLayer
 						name: item.name.toLowerCase() + "Label"
 						parent: tab
 						x: Align.center
 						y: Align.bottom
-						text: item.name
+						text: item.name.toUpperCase()
 						textAlign: "center"
-						fontSize: 10
+						fontSize: 14
+						fontFamily: "Roboto"
 						color: @options.labelColor
 
 				section = new FlowComponent
-					name: item.name.toLowerCase() + "Contents"
+					name: item.name.toLowerCase() + "Flow"
 					parent: tabContent
 					x: tabContent.width * i
 					y: 0
 					size: tabContent.size
+					backgroundColor: null
 
 				if @options.tabBarHide
 					section.onScrollStart ->
@@ -144,7 +150,7 @@ class TabBarComponent extends Layer
 						else
 							tabBar.animate("show")
 
-				tempTabs.push({tab: tab, contents: section})
+				tempTabs.push({tab: tab, flow: section})
 
 				tab.onClick =>
 					@options.active = i
@@ -158,13 +164,13 @@ class TabBarComponent extends Layer
 						item.stateSwitch("inactive")
 				@options.tabs[pos].tab.stateSwitch("active")
 				moveactiveIndicator(tabWidth * pos, 0.2)
-				contentsMap = @options.tabs.map (section) -> section.contents
+				contentsMap = @options.tabs.map (section) -> section.flow
 				j = contentsMap.indexOf(tabContent.current)
 				if @options.active < j
 					transition = slideInLeft
 				else
 					transition = slideInRight
-				tabContent.transition(@options.tabs[pos].contents, transition)
+				tabContent.transition(@options.tabs[pos].flow, transition)
 				moveactiveIndicator(tabWidth * pos, 0.2)
 		# end @layout()
 
