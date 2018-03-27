@@ -19,11 +19,11 @@ tb = new TabBarComponent
 tb.placeBehind(header)
 tb.activateTab(0)
 
-page = new Layer
+page1 = new Layer
 	height: Screen.height * 1.5
 	width: Screen.width
 	backgroundColor: matDesLightBlue.alpha(Utils.randomNumber(.2, .4))
-page.label = "calls"
+page1.label = "calls"
 recentFlow = tb.tabs[0]
 recentFlow.flow.showNext(page)
 recentFlow.flow.scroll.scrollHorizontal = false
